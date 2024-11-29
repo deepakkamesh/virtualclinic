@@ -17,9 +17,7 @@ func main() {
 
 	b := sysagent.NewBrowser(bin, bpath,
 		&proto.BrowserBounds{WindowState: proto.BrowserWindowStateMaximized})
-	if err := b.Browser(); err != nil {
-		glog.Fatalf("Failed to open Browser: %v", err)
-	}
+
 	if err := b.GVC(gvcid, joinN); err != nil {
 		glog.Fatalf("Failed to start GVC %v", err)
 	}
@@ -29,11 +27,12 @@ func main() {
 		glog.Errorf("failed info %v", err)
 	}
 	time.Sleep(4 * time.Second)
-	b.FocusGVCPage()
+	b.FocusPage(sysagent.GVCPage)
 	time.Sleep(2 * time.Second)
-	b.SetInfoPageUrl("https://google.com")
+	b.InfoPage("https://google.com")
 	time.Sleep(2 * time.Second)
-	//	b.Close()
+	b.ClosePage(sysagent.InfoPage)
+	time.Sleep(2 * time.Second)
 
 	time.Sleep(time.Hour)
 }
