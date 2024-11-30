@@ -158,7 +158,7 @@ func (b *Browser) ClosePage(page PageType) error {
 }
 
 // ToggleMuteGVC mutes the remote GVC.
-func (b *Browser) ToggleMuteGVC(page PageType) error {
+func (b *Browser) ToggleMuteGVC() error {
 	p, ok := b.pages[GVCPage]
 	if ok && p == nil {
 		return fmt.Errorf("GVC page not open")
@@ -170,4 +170,17 @@ func (b *Browser) ToggleMuteGVC(page PageType) error {
 	return nil
 }
 
+// SendEscKey sends the escape key to the specified page.
+func (b *Browser) SendEscKey(page PageType) error {
+	p, ok := b.pages[page]
+	if ok && p == nil {
+		return nil
+	}
+	if err := p.KeyActions().Press(input.Escape).Do(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // TODO: If otoscope camera works via GVC then add camera selector in GVC settings.
+// TODO get screenshot of page to see locally.
