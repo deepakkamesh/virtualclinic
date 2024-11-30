@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"log"
 
+	"github.com/BurntSushi/toml"
+	"github.com/deepakkamesh/virtualclinic"
 	"github.com/golang/glog"
-	"github.com/itchyny/volume-go"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -81,6 +81,7 @@ func main() {
 	}
 	fmt.Printf("done")*/
 
+	/* Volume Management
 	vol, err := volume.GetVolume()
 	if err != nil {
 		log.Fatalf("get volume failed: %+v", err)
@@ -92,14 +93,16 @@ func main() {
 		log.Fatalf("set volume failed: %+v", err)
 	}
 	fmt.Printf("set volume success\n")
+	*/
 
-	err = volume.Mute()
-	if err != nil {
-		log.Fatalf("mute failed: %+v", err)
-	}
+	// SSH see sshtun.go in temp folder.
 
-	err = volume.Unmute()
+	/* Config File*/
+	var conf virtualclinic.Config
+
+	_, err := toml.DecodeFile("../virtualclinic.conf.toml", &conf)
 	if err != nil {
-		log.Fatalf("unmute failed: %+v", err)
+		fmt.Printf("%v", err)
 	}
+	fmt.Printf("%v\n", conf)
 }

@@ -1,0 +1,22 @@
+# TOML config file for virtual clinic
+
+gvc_id = "123"
+gvc_join_now_selector = "abc"  # Element selector for GVC join button.
+chrome_user_dir = "/home/drguru/.config/google-chrome/"
+chrome_bin = "/usr/bin/google-chrome"
+
+whatsapp_recipient_suffix = "@s.whatsapp.net" # suffix for whatsapp destination. eg 15554441234@@s.whatsapp.net
+
+# Network/Port details.
+relay_server_address = "drguruswamyclinic.hyperlinkhome.com"
+[portfwd.web]
+    local_port = 80
+    remote_port = 8080
+
+[portfwd.ssh] 
+    local_port = 22
+    remote_port = 2222
+
+[portfwd.rdp]
+    local_port = 3389
+    remote_port = 2203

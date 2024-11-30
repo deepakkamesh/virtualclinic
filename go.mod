@@ -29,6 +29,7 @@ require (
 )
 
 require (
+	github.com/BurntSushi/toml v1.4.0
 	github.com/golang/glog v1.2.3
 	github.com/ysmood/fetchup v0.2.3 // indirect
 	github.com/ysmood/goob v0.4.0 // indirect
