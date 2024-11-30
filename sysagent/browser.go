@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-rod/rod"
+	"github.com/go-rod/rod/lib/input"
 	"github.com/go-rod/rod/lib/launcher"
 	"github.com/go-rod/rod/lib/proto"
 )
@@ -153,6 +154,19 @@ func (b *Browser) ClosePage(page PageType) error {
 		return err
 	}
 	b.pages[page] = nil
+	return nil
+}
+
+// ToggleMuteGVC mutes the remote GVC.
+func (b *Browser) ToggleMuteGVC(page PageType) error {
+	p, ok := b.pages[GVCPage]
+	if ok && p == nil {
+		return fmt.Errorf("GVC page not open")
+	}
+	if err := p.KeyActions().Press(input.ControlLeft).Type('d').Do(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
