@@ -46,7 +46,8 @@ func (b *Browser) openBrowser() error {
 		return err
 	}
 
-	browser := rod.New().ControlURL(u).NoDefaultDevice()
+	// SlowMotion so the keystrokes work.
+	browser := rod.New().ControlURL(u).NoDefaultDevice().SlowMotion(500 * time.Millisecond)
 	if err := browser.Connect(); err != nil {
 		return err
 	}
@@ -88,19 +89,39 @@ func (b *Browser) GVC(gvcID, JoinNowElem string) error {
 		return err
 	}
 
-	// Find element for JoinNow button and click on it.
-	elem, err := p.Element(JoinNowElem)
-	if err != nil {
+	if err := rod.Try(func() {
+		p.MustElement(JoinNowElem).Click(proto.InputMouseButtonLeft, 1)
+	}); err != nil {
 		return err
 	}
-	if err := elem.Click(proto.InputMouseButtonLeft, 1); err != nil {
-		return err
+	b.pages[GVCPage] = p
+	return nil
+}
+
+func (b *Browser) SwitchGVCCamera(camera int, optionsXPath string) error {
+	p, ok := b.pages[GVCPage]
+	if ok && p == nil {
+		return fmt.Errorf("GVC page not open")
 	}
-	if err := p.WaitStable(time.Millisecond * 100); err != nil {
+	if _, err := p.Activate(); err != nil {
 		return err
 	}
 
-	b.pages[GVCPage] = p
+	if err := rod.Try(func() {
+		p.MustElementX(optionsXPath).MustClick()                 // Open burger menu.
+		p.MustElementR("li", "Settings").MustClick()             // Click Settings.
+		p.MustElementR("button", "Video").MustClick()            // Click Video.
+		p.MustElementR("span", "Webcam").MustClick().MustFocus() // Click on camera dropdown.
+		// ArrowDown till we get to the requested camera.
+		for i := 0; i < camera; i++ {
+			p.KeyActions().Press(input.ArrowDown).MustDo()
+		}
+		p.KeyActions().Press(input.Enter).MustDo()
+		p.MustElementR("button", "Video").MustClick().MustFocus()
+		p.KeyActions().Press(input.Escape).MustDo()
+	}); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -163,6 +184,9 @@ func (b *Browser) ToggleMuteGVC() error {
 	if ok && p == nil {
 		return fmt.Errorf("GVC page not open")
 	}
+	if _, err := p.Activate(); err != nil {
+		return err
+	}
 	if err := p.KeyActions().Press(input.ControlLeft).Type('d').Do(); err != nil {
 		return err
 	}
@@ -176,11 +200,13 @@ func (b *Browser) SendEscKey(page PageType) error {
 	if ok && p == nil {
 		return nil
 	}
+	if _, err := p.Activate(); err != nil {
+		return err
+	}
 	if err := p.KeyActions().Press(input.Escape).Do(); err != nil {
 		return err
 	}
 	return nil
 }
 
-// TODO: If otoscope camera works via GVC then add camera selector in GVC settings.
 // TODO get screenshot of page to see locally.

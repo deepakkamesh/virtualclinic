@@ -2,9 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/BurntSushi/toml"
-	"github.com/deepakkamesh/virtualclinic"
+	"github.com/deepakkamesh/virtualclinic/sysagent"
+	"github.com/go-rod/rod/lib/proto"
 	"github.com/golang/glog"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -12,11 +16,12 @@ import (
 func main() {
 	glog.Info("Starting Virtual Clinic")
 
-	/* Test for Browser
+	/* Test for Browser*/
 	bpath := "/home/drguru/.config/google-chrome/"
 	bin := "/usr/bin/google-chrome"
 	gvcid := "pym-jphe-rwg"
 	joinN := "#yDmH0d > c-wiz > div > div > div.TKU8Od > div.crqnQb > div > div.gAGjv > div.vgJExf > div > div > div.d7iDfe.NONs6c > div.shTJQe > div.jtn8y > div.XCoPyb"
+	optionsXPath := "//*[@id=\"yDmH0d\"]/c-wiz/div/div/div[34]/div[4]/div[10]/div/div/div[2]/div/div[7]/div[4]/div[1]/span/button"
 
 	b := sysagent.NewBrowser(bin, bpath,
 		&proto.BrowserBounds{WindowState: proto.BrowserWindowStateMaximized})
@@ -24,19 +29,25 @@ func main() {
 	if err := b.GVC(gvcid, joinN); err != nil {
 		glog.Fatalf("Failed to start GVC %v", err)
 	}
-	time.Sleep(4 * time.Second)
+	time.Sleep(1 * time.Second)
 
-	if err := b.InfoPage("https://example.com"); err != nil {
-		glog.Errorf("failed info %v", err)
+	//	if err := b.SwitchGVCCamera(1, optionsXPath); err != nil {
+	//		fmt.Printf("Error %v", err)
+	//	}
+	cn := 1
+	for i := 0; i < 5; i++ {
+		fmt.Println(cn)
+		if err := b.SwitchGVCCamera(cn, optionsXPath); err != nil {
+			fmt.Printf("Error %v", err)
+		}
+		if cn == 1 {
+			cn = 2
+		} else {
+			cn = 1
+		}
+
+		time.Sleep(2 * time.Second)
 	}
-	time.Sleep(4 * time.Second)
-	b.FocusPage(sysagent.GVCPage)
-	time.Sleep(2 * time.Second)
-	b.InfoPage("https://google.com")
-	time.Sleep(2 * time.Second)
-	b.ClosePage(sysagent.InfoPage)
-	time.Sleep(2 * time.Second)
-	time.Sleep(time.Hour) */
 
 	/* Test for WhatsApp
 	wa := sysagent.NewWhatsApp()
@@ -97,12 +108,15 @@ func main() {
 
 	// SSH see sshtun.go in temp folder.
 
-	/* Config File*/
+	/* Config File
 	var conf virtualclinic.Config
 
 	_, err := toml.DecodeFile("../virtualclinic.conf.toml", &conf)
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	fmt.Printf("%v\n", conf)
+	fmt.Printf("%v\n", conf) */
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	<-c
 }
