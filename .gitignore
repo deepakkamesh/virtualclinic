@@ -1,2 +1,5 @@
 main
 *.db
+prototypes/*
+!prototypes/*.go
+.DS_Store
