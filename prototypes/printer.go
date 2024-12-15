@@ -66,6 +66,7 @@ func main() {
 }
 
 func PrintScript(devPrinter, drPhone, drEmail, patientName, sexAge string) error {
+	// tODO Lock the print device so only one access.
 	f, err := os.OpenFile(devPrinter, os.O_RDWR, 0)
 	if err != nil {
 		panic(err)

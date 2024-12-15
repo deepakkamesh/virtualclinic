@@ -17,7 +17,7 @@ func main() {
 	glog.Info("Starting Virtual Clinic")
 
 	/* Test for Browser*/
-	bpath := "/home/drguru/.config/google-chrome/"
+	/*bpath := "/home/drguru/.config/google-chrome/"
 	bin := "/usr/bin/google-chrome"
 	gvcid := "pym-jphe-rwg"
 	joinN := "#yDmH0d > c-wiz > div > div > div.TKU8Od > div.crqnQb > div > div.gAGjv > div.vgJExf > div > div > div.d7iDfe.NONs6c > div.shTJQe > div.jtn8y > div.XCoPyb"
@@ -116,7 +116,7 @@ func main() {
 		fmt.Printf("%v", err)
 	}
 	fmt.Printf("%v\n", conf) */
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
+
+	/* Test for Script Class */
+
 }
