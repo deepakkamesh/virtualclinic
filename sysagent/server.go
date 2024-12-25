@@ -64,7 +64,7 @@ func (s *Server) StartRPCTunnel() error {
 	return nil
 }
 
-/************* RPC Service Functions *************/
+/************* RPC Wrapper Functions *************/
 
 func (s *Server) StartRemoteGVC(args struct{}, reply *struct{}) error {
 	return s.sysAgent.StartRemoteGVC()
