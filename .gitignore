@@ -1,5 +1,7 @@
 main
 *.db
+bin/sysagent/sysagent
+bin/sysagent-cli/cli
 prototypes/*
 !prototypes/*.go
 .DS_Store

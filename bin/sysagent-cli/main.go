@@ -4,7 +4,9 @@ import (
 	"log"
 	"net/rpc"
 	"os"
+	"time"
 
+	s "github.com/deepakkamesh/virtualclinic/sysagent"
 	"github.com/urfave/cli/v2"
 )
 
@@ -190,9 +192,51 @@ func main() {
 				return nil
 			},
 		},
+		{
+			Name:    "print_test",
+			Aliases: []string{"pt"},
+			Usage:   "Test Printer",
+			Action: func(c *cli.Context) error {
+				client, err := rpc.DialHTTP("tcp", c.String("host"))
+				if err != nil {
+					return err
+				}
+				lines := ScriptHeader()
+				line := s.Line("Evidence of flu symptoms", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"))
+				lines = append(lines, line)
+				line = s.Line("Paracetamol 500mg - 3 times a day", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"), s.FormFeed(2))
+				lines = append(lines, line)
+				line = s.Line("Cipro 500mg - 2 times a day", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"), s.FormFeed(2))
+				lines = append(lines, line)
+
+				err = client.Call("Server.PrintScript", lines, &struct{}{})
+				if err != nil {
+					return err
+				}
+				return nil
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func ScriptHeader() []*s.FormattedLine {
+	loc, _ := time.LoadLocation("Asia/Kolkata") // Always print date/time in India time.
+	now := time.Now().In(loc)
+	date := now.Format("2 Jan 2006  3:04 pm")
+
+	lines := []*s.FormattedLine{}
+	line := s.Line("Dr. R Guruswamy", s.FontSize([2]uint8{2, 2}), s.Smooth(1), s.Align("center"), s.Underline(6), s.Emphasize(3), s.FormFeed(2))
+	lines = append(lines, line)
+	line = s.Line("Ph:+91-9840084500 / Email:dr.guruswamy@gmail.com", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"))
+	lines = append(lines, line)
+	line = s.Line("_______________________________________________", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("center"), s.FormFeed(2))
+	lines = append(lines, line)
+	line = s.Line(date, s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("right"), s.FormFeed(2))
+	lines = append(lines, line)
+
+	return lines
 }

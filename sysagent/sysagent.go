@@ -9,6 +9,7 @@ import (
 	vc "github.com/deepakkamesh/virtualclinic"
 	"github.com/golang/glog"
 	volume "github.com/itchyny/volume-go"
+	"github.com/kenshaw/escpos"
 	"github.com/rgzr/sshtun"
 )
 
@@ -148,6 +149,26 @@ func (s *SysAgent) Volume() (int, error) {
 }
 
 // PrintScript prints the script to the printer device.
-func (s *SysAgent) PrintScript(script string) error {
+func (s *SysAgent) PrintScript(lines []FormattedLine) error {
+	f, err := os.OpenFile(s.PrinterDevice, os.O_RDWR, 0)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	p := escpos.New(f)
+	p.Init()
+
+	for _, line := range lines {
+		p.SetFont(line.Font)
+		p.SetFontSize(line.FontSize[0], line.FontSize[1])
+		p.SetAlign(line.Align)
+		p.SetEmphasize(line.Emphasize)
+		p.SetSmooth(line.Smooth)
+		p.SetUnderline(line.Underline)
+		p.Write(line.Text)
+		p.FormfeedN(line.FormFeed)
+	}
+	p.Cut()
+	p.End()
 	return nil
 }

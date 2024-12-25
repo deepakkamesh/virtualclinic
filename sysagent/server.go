@@ -110,6 +110,6 @@ func (s *Server) SetVolume(vol int, reply *struct{}) error {
 	return s.sysAgent.SetVolume(vol)
 }
 
-func (s *Server) PrintScript(script string, reply *struct{}) error {
+func (s *Server) PrintScript(script []FormattedLine, reply *struct{}) error {
 	return s.sysAgent.PrintScript(script)
 }
