@@ -27,12 +27,12 @@ type Browser struct {
 }
 
 // NewBrowser returns an initialized GVC object.
-func NewBrowser(browserPath, userDataDir string, windowLayout *proto.BrowserBounds) *Browser {
+func NewBrowser(browserPath, userDataDir string, browserWindowState string) *Browser {
 	return &Browser{
 		browserPath:  browserPath,
 		userDataDir:  userDataDir,
 		browser:      nil,
-		windowLayout: windowLayout,
+		windowLayout: &proto.BrowserBounds{WindowState: proto.BrowserWindowState(browserWindowState)},
 		pages:        make(map[PageType]*rod.Page),
 	}
 }
@@ -62,6 +62,11 @@ func (b *Browser) Close() error {
 		return nil
 	}
 
+	// Close all open pages.
+	for p := range b.pages {
+		b.ClosePage(p)
+	}
+
 	if err := b.browser.Close(); err != nil {
 		return err
 	}
@@ -76,6 +81,10 @@ func (b *Browser) GVC(gvcID, JoinNowElem string) error {
 		if err := b.openBrowser(); err != nil {
 			return err
 		}
+	}
+	_, ok := b.pages[GVCPage]
+	if ok && b.pages[GVCPage] != nil {
+		return fmt.Errorf("GVC page already open")
 	}
 	p, err := b.browser.Page(proto.TargetCreateTarget{
 		URL: "https://meet.google.com/" + gvcID,
