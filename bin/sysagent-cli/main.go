@@ -208,6 +208,8 @@ func main() {
 				lines = append(lines, line)
 				line = s.Line("Cipro 500mg - 2 times a day", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"), s.FormFeed(2))
 				lines = append(lines, line)
+				line = s.Line("Fexofenadine 300mg - 1 time a day", s.FontSize([2]uint8{1, 1}), s.Smooth(1), s.Align("left"), s.FormFeed(2))
+				lines = append(lines, line)
 
 				err = client.Call("Server.PrintScript", lines, &struct{}{})
 				if err != nil {

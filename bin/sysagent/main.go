@@ -57,7 +57,14 @@ func main() {
 		return
 	}
 
+	// Flush logs.
 	glog.Info("Virtual Clinic Started")
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+			glog.Flush()
+		}
+	}()
 
 	// Wait for signal to stop.
 	c := make(chan os.Signal, 1)

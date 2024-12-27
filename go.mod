@@ -72,7 +72,7 @@ require (
 
 require (
 	fyne.io/fyne/v2 v2.5.2
-	github.com/BurntSushi/toml v1.4.0 // indirect
+	github.com/BurntSushi/toml v1.4.0
 	github.com/golang/glog v1.2.3
 	github.com/itchyny/volume-go v0.2.2
 	github.com/kenshaw/escpos v0.0.0-20221114190919-df06b682a8fc

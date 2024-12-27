@@ -15,6 +15,10 @@ push-sysagent:
 	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress ./bin/sysagent/sysagent drguru@192.168.68.119:~/
 	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress virtualclinic.conf.toml drguru@192.168.68.119:~/
 
+push-sysagent-cloud:
+	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress ./bin/sysagent/sysagent drguru@drguruswamyclinic.hyperlinkhome.com:~/virtualclinic/
+	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress virtualclinic.conf.toml drguru@drguruswamyclinic.hyperlinkhome.com:~/virtualclinic/
+
 push:
 	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress main drguru@192.168.68.119:~/
 	rm main
