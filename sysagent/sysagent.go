@@ -14,30 +14,28 @@ import (
 )
 
 type SysAgent struct {
-	browser         *Browser                  // Browser struct.
-	optionsXPath    string                    // XPath for the GVC options.
-	joinNowSelector string                    // CSS Selector for GVC JoinNow.
-	gvcID           string                    // GVC ID.
-	checkURL        string                    // http URL to validate if internet is connected.
-	tunnels         map[string]vc.Tunnel      // SSH tunnels list.
-	tunnelConn      map[string]*sshtun.SSHTun // List of SSH tunnels.
-	OtoCamDevice    string                    // OtoCam Device
-	PrinterDevice   string                    // Printer Device
+	browser       *Browser                  // Browser struct.
+	optionsSel    string                    // Selector for the GVC more options.
+	gvcID         string                    // GVC ID.
+	checkURL      string                    // http URL to validate if internet is connected.
+	tunnels       map[string]vc.Tunnel      // SSH tunnels list.
+	tunnelConn    map[string]*sshtun.SSHTun // List of SSH tunnels.
+	OtoCamDevice  string                    // OtoCam Device
+	PrinterDevice string                    // Printer Device
 }
 
 // NewSysAgent starts a new SysAgent Service
 // BrowserWindowStates are proto.(BrowserWindowStateNormal|BrowserWindowStateMinimized|BrowserWindowStateMaximized|BrowserWindowStateFullscreen)
 func NewSysAgent(c vc.Config) *SysAgent {
 	sys := &SysAgent{
-		browser:         NewBrowser(c.ChromeBin, c.ChromeUserDir, c.BrowserWindowState),
-		optionsXPath:    c.GVCOptionsXPath,
-		joinNowSelector: c.GVCJoinNowSelector,
-		gvcID:           c.GVCID,
-		checkURL:        c.CheckURL,
-		OtoCamDevice:    c.OtoCamDevice,
-		PrinterDevice:   c.PrinterDevice,
-		tunnels:         make(map[string]vc.Tunnel),
-		tunnelConn:      make(map[string]*sshtun.SSHTun),
+		browser:       NewBrowser(c.ChromeBin, c.ChromeUserDir, c.BrowserWindowState),
+		optionsSel:    c.GVCOptionsSel,
+		gvcID:         c.GVCID,
+		checkURL:      c.CheckURL,
+		OtoCamDevice:  c.OtoCamDevice,
+		PrinterDevice: c.PrinterDevice,
+		tunnels:       make(map[string]vc.Tunnel),
+		tunnelConn:    make(map[string]*sshtun.SSHTun),
 	}
 	sys.tunnels = c.Tunnels
 	return sys
@@ -96,7 +94,7 @@ func (s *SysAgent) StopTunnel(tunID string) error {
 }
 
 func (s *SysAgent) StartRemoteGVC() error {
-	return s.browser.GVC(s.gvcID, s.joinNowSelector)
+	return s.browser.GVC(s.gvcID)
 }
 
 func (s *SysAgent) StopRemoteGVC() error {
@@ -109,7 +107,7 @@ func (s *SysAgent) ToggleMuteGVC() error {
 
 // SwitchGVCCamera changes the camera on GVC session between OtoCam/WebCam
 func (s *SysAgent) SwitchGVCCamera(camera int) error {
-	return s.browser.SwitchGVCCamera(camera, s.optionsXPath)
+	return s.browser.SwitchGVCCamera(camera, s.optionsSel)
 }
 
 // SetVolume sets the audio output volume as a %.

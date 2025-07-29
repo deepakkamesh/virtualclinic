@@ -3,8 +3,7 @@ package virtualclinic
 type (
 	Config struct {
 		GVCID                   string            `toml:"gvc_id"`
-		GVCJoinNowSelector      string            `toml:"gvc_join_now_selector"`
-		GVCOptionsXPath         string            `toml:"gvc_options_xpath"`
+		GVCOptionsSel           string            `toml:"gvc_more_options_sel"`
 		ChromeUserDir           string            `toml:"chrome_user_dir"`
 		ChromeBin               string            `toml:"chrome_bin"`
 		WhatsAppRecipientSuffix string            `toml:"whatsapp_recipient_suffix"`

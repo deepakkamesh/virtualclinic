@@ -1,9 +1,9 @@
 # TOML config file for virtual clinic
 
-gvc_id = "pym-jphe-rwg"
-gvc_join_now_selector = "#yDmH0d > c-wiz > div > div > div.TKU8Od > div.crqnQb > div > div.gAGjv > div.vgJExf > div > div > div.d7iDfe.NONs6c > div.shTJQe > div.jtn8y > div.XCoPyb"  # Element selector for GVC join button.
-gvc_options_xpath = "//*[@id=\"yDmH0d\"]/c-wiz/div/div/div[34]/div[4]/div[10]/div/div/div[2]/div/div[7]/div[4]/div[1]/span/button" #xPATH for the GVC options burger menu.
-chrome_user_dir = "/home/drguru/.config/google-chrome/"
+gvc_id = "ffa-citz-iyw" # On  drguruclinicx@gmail.com calendar.
+#gvc_id = "wga-woyf-zef" # Test GVC ID.
+gvc_more_options_sel = "#yDmH0d > c-wiz > div > div > div.TKU8Od > div.crqnQb > div > div:nth-child(8) > div > div > div.Tmb7Fd > div > div.UvDM0e > div.tB5Jxf-xl07Ob-XxIAqe-OWXEXe-oYxtQd > div:nth-child(1) > span > button" # Out div selector of more options burger menu.
+chrome_user_dir = "/home/drguru/chrome/"
 chrome_bin = "/usr/bin/google-chrome"
 otocam_num = 2 # Camera listed on GVC camera dropdown.
 webcam_num = 1 # Camera listed on GVC camera dropdown.

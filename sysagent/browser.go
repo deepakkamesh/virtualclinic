@@ -1,6 +1,7 @@
 package sysagent
 
 import (
+	"flag"
 	"fmt"
 	"time"
 
@@ -24,6 +25,7 @@ type Browser struct {
 	browser      *rod.Browser           // Handler to the browser.
 	windowLayout *proto.BrowserBounds   // Dimensions, size of window
 	pages        map[PageType]*rod.Page // Handle to open pages (tabs)
+	timeout      time.Duration
 }
 
 // NewBrowser returns an initialized GVC object.
@@ -34,16 +36,25 @@ func NewBrowser(browserPath, userDataDir string, browserWindowState string) *Bro
 		browser:      nil,
 		windowLayout: &proto.BrowserBounds{WindowState: proto.BrowserWindowState(browserWindowState)},
 		pages:        make(map[PageType]*rod.Page),
+		timeout:      10 * time.Second,
 	}
 }
 
 // openBrowser opens a non headless browser.
 func (b *Browser) openBrowser() error {
+	var (
+		u   string
+		err error
+	)
 
-	l := launcher.New().Headless(false).UserDataDir(b.userDataDir).RemoteDebuggingPort(0).Delete("enable-automation").Bin(b.browserPath)
-	u, err := l.Launch()
-	if err != nil {
-		return err
+	if flag.Lookup("dbg_session") != nil && flag.Lookup("dbg_session").Value.String() != "" {
+		u = flag.Lookup("dbg_session").Value.String()
+	} else {
+		l := launcher.New().Headless(false).UserDataDir(b.userDataDir).RemoteDebuggingPort(0).Delete("enable-automation").Bin(b.browserPath)
+		u, err = l.Launch()
+		if err != nil {
+			return err
+		}
 	}
 
 	// SlowMotion so the keystrokes work.
@@ -75,7 +86,7 @@ func (b *Browser) Close() error {
 }
 
 // GVC Open a GVC session with gvcID and JoinNowElem which is selector path for the JoinNow button.
-func (b *Browser) GVC(gvcID, JoinNowElem string) error {
+func (b *Browser) GVC(gvcID string) error {
 	// Open a new browser if not open already.
 	if b.browser == nil {
 		if err := b.openBrowser(); err != nil {
@@ -93,13 +104,13 @@ func (b *Browser) GVC(gvcID, JoinNowElem string) error {
 		return err
 	}
 
-	time.Sleep(3 * time.Second) // Small delay to let the page load fully.
+	time.Sleep(5 * time.Second) // Small delay to let the page load fully.
 	if err := p.SetWindow(b.windowLayout); err != nil {
 		return err
 	}
 
 	if err := rod.Try(func() {
-		p.MustElement(JoinNowElem).Click(proto.InputMouseButtonLeft, 1)
+		p.Timeout(b.timeout).MustElementR("button", "Join now").MustClick()
 	}); err != nil {
 		return err
 	}
@@ -107,9 +118,9 @@ func (b *Browser) GVC(gvcID, JoinNowElem string) error {
 	return nil
 }
 
-func (b *Browser) SwitchGVCCamera(camera int, optionsXPath string) error {
+func (b *Browser) SwitchGVCCamera(camera int, optionsSel string) error {
 	p, ok := b.pages[GVCPage]
-	if ok && p == nil {
+	if !ok || p == nil {
 		return fmt.Errorf("GVC page not open")
 	}
 	if _, err := p.Activate(); err != nil {
@@ -117,16 +128,16 @@ func (b *Browser) SwitchGVCCamera(camera int, optionsXPath string) error {
 	}
 
 	if err := rod.Try(func() {
-		p.MustElementX(optionsXPath).MustClick()                 // Open burger menu.
-		p.MustElementR("li", "Settings").MustClick()             // Click Settings.
-		p.MustElementR("button", "Video").MustClick()            // Click Video.
-		p.MustElementR("span", "Webcam").MustClick().MustFocus() // Click on camera dropdown.
+		p.Timeout(b.timeout).MustElement(optionsSel).MustClick()          // Open burger menu.
+		p.Timeout(b.timeout).MustElementR("li", "Settings").MustClick()   // Click Settings.
+		p.Timeout(b.timeout).MustElementR("button", "Video").MustClick()  // Click Video.
+		p.Timeout(b.timeout).MustElementR("button", "Webcam").MustClick() // Click on camera dropdown.
 		// ArrowDown till we get to the requested camera.
 		for i := 0; i < camera; i++ {
 			p.KeyActions().Press(input.ArrowDown).MustDo()
 		}
 		p.KeyActions().Press(input.Enter).MustDo()
-		p.MustElementR("button", "Video").MustClick().MustFocus()
+		p.Timeout(b.timeout).MustElementR("button", "Video").MustClick()
 		p.KeyActions().Press(input.Escape).MustDo()
 	}); err != nil {
 		return err

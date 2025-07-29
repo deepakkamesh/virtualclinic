@@ -8,8 +8,11 @@ build:
 build-sysagent-cli: 
 	go build -o ./bin/sysagent-cli/cli ./bin/sysagent-cli/
 
-build-sysagent:
+build-sysagent-linux:
 	GOARCH=amd64 GOOS=linux CGO_ENABLED=0  go build -o ./bin/sysagent/sysagent ./bin/sysagent/
+
+build-sysagent-mac:
+	 go build -o ./bin/sysagent/sysagent ./bin/sysagent/
 
 push-sysagent:
 	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress ./bin/sysagent/sysagent drguru@192.168.68.119:~/

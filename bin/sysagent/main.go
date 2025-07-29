@@ -18,6 +18,7 @@ func main() {
 	var (
 		cfgPath = flag.String("config_file", "./virtualclinic.conf.toml", "config file for virtual clinic")
 	)
+	flag.String("dbg_session", "", "ws path to chrome session e.g ws://127.0.0.1:9222/devtools/browser/xxx")
 	flag.Parse()
 
 	var conf virtualclinic.Config
