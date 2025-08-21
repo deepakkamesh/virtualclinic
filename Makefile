@@ -26,6 +26,10 @@ push:
 	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress main drguru@192.168.68.119:~/
 	rm main
 
+http:
+	GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build -o ./prototypes/httpserver ./prototypes/httpserver.go
+	rsync -avz -e "ssh -o StrictHostKeyChecking=no" --progress ./prototypes/httpserver drguru@drguruswamyclinic.hyperlinkhome.com:~/
+
 all: build push
 
 bprint:

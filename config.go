@@ -26,7 +26,8 @@ type (
 )
 
 const (
-	RPCTunID string = "rpc"
-	SSHTunID string = "ssh"
-	RDPTunID string = "rdp"
+	RPCTunID  string = "rpc"
+	SSHTunID  string = "ssh"
+	RDPTunID  string = "rdp"
+	HTTPTunID string = "http"
 )

@@ -58,6 +58,20 @@ func main() {
 		return
 	}
 
+	// Start HTTP Service.
+	if err := server.StartHTTPService(); err != nil {
+		glog.Errorf("Failed to start HTTP service %v", err)
+		return
+	}
+	glog.Info("Started HTTP Service...[OK]")
+
+	// Start HTTP Tunnel.
+	if err := server.StartHTTPTunnel(); err != nil {
+		glog.Errorf("Failed to start HTTP tunnel %v", err)
+		return
+	}
+	glog.Info("Started HTTP Tunnel...[OK]")
+
 	// Flush logs.
 	glog.Info("Virtual Clinic Started")
 	go func() {

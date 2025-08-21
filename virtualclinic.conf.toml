@@ -34,3 +34,10 @@ whatsapp_recipient_suffix = "@s.whatsapp.net" # suffix for whatsapp destination.
     local_host = "127.0.0.1"
     remote_host = "drguruswamyclinic.hyperlinkhome.com"
     user = "drguru"
+
+[tunnel.http]
+    local_port = 8080
+    remote_port = 58080
+    local_host = "127.0.0.1"
+    remote_host = "drguruswamyclinic.hyperlinkhome.com"
+    user = "drguru"
