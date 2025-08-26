@@ -105,6 +105,10 @@ func (s *SysAgent) ToggleMuteGVC() error {
 	return s.browser.ToggleMuteGVC()
 }
 
+func (s *SysAgent) IsGVCOpen() bool {
+	return s.browser.IsGVCOpen()
+}
+
 // SwitchGVCCamera changes the camera on GVC session between OtoCam/WebCam
 func (s *SysAgent) SwitchGVCCamera(camera int) error {
 	return s.browser.SwitchGVCCamera(camera, s.optionsSel)

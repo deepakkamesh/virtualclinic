@@ -118,6 +118,12 @@ func (b *Browser) GVC(gvcID string) error {
 	return nil
 }
 
+// IsGVCOpen returns true if GVC page is open.
+func (b *Browser) IsGVCOpen() bool {
+	_, ok := b.pages[GVCPage]
+	return ok && b.pages[GVCPage] != nil
+}
+
 func (b *Browser) SwitchGVCCamera(camera int, optionsSel string) error {
 	p, ok := b.pages[GVCPage]
 	if !ok || p == nil {

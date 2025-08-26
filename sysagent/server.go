@@ -118,6 +118,12 @@ func (s *Server) StartRemoteGVC(args struct{}, reply *struct{}) error {
 func (s *Server) StopRemoteGVC(args struct{}, reply *struct{}) error {
 	return s.sysAgent.StopRemoteGVC()
 }
+
+func (s *Server) IsGVCOpen(args struct{}, reply *bool) error {
+	*reply = s.sysAgent.IsGVCOpen()
+	return nil
+}
+
 func (s *Server) SwitchGVCCamera(camera int, reply *struct{}) error {
 	return s.sysAgent.SwitchGVCCamera(camera)
 }
@@ -171,9 +177,17 @@ func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
 
 // TODO: gvcready handles the request to check if GVC is ready.
 func (s *Server) gvcready(w http.ResponseWriter, r *http.Request) {
+	msg := "GVC is not open"
+	isMsgErr := true
+
+	if s.sysAgent.IsGVCOpen() {
+		msg = "GVC is open"
+		isMsgErr = false
+	}
+
 	writeResponse(w, &response{
-		Msg:        "GVC is ready",
-		IsMsgError: false,
+		Msg:        msg,
+		IsMsgError: isMsgErr,
 	})
 }
 
