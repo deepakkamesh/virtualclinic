@@ -194,7 +194,7 @@ func (b *Browser) FocusPage(page PageType) error {
 // ClosePage closes the tab on the browser.
 func (b *Browser) ClosePage(page PageType) error {
 	p, ok := b.pages[page]
-	if ok && p == nil {
+	if !ok || p == nil {
 		return nil
 	}
 	if err := p.Close(); err != nil {
@@ -207,7 +207,7 @@ func (b *Browser) ClosePage(page PageType) error {
 // ToggleMuteGVC mutes the remote GVC.
 func (b *Browser) ToggleMuteGVC() error {
 	p, ok := b.pages[GVCPage]
-	if ok && p == nil {
+	if !ok || p == nil {
 		return fmt.Errorf("GVC page not open")
 	}
 	if _, err := p.Activate(); err != nil {
@@ -223,7 +223,7 @@ func (b *Browser) ToggleMuteGVC() error {
 // SendEscKey sends the escape key to the specified page.
 func (b *Browser) SendEscKey(page PageType) error {
 	p, ok := b.pages[page]
-	if ok && p == nil {
+	if !ok || p == nil {
 		return nil
 	}
 	if _, err := p.Activate(); err != nil {

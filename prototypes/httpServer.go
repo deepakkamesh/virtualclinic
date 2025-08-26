@@ -21,6 +21,7 @@ type response struct {
 }
 
 type pingResponse struct {
+	IsSystemReady      bool `json:"isSystemReady"`
 	IsGVCReady         bool `json:"isGVCReady"`
 	IsPrinterConnected bool `json:"isPrinterConnected"`
 	IsOtocamConnected  bool `json:"isOtocamConnected"`
@@ -56,9 +57,12 @@ func (s *Server) Start() error {
 
 // ping handles the ping request to check if the server is running.
 func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
+	c++
+	// Placeholder values for the ping response.
 	writePingResponse(w, &pingResponse{
+		IsSystemReady:      true,
 		IsGVCReady:         true,
-		IsPrinterConnected: false,
+		IsPrinterConnected: c%2 == 0,
 		IsOtocamConnected:  false,
 		Volume:             50,
 	})

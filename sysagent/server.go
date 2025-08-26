@@ -30,6 +30,7 @@ type response struct {
 }
 
 type pingResponse struct {
+	IsSystemReady      bool `json:"isSystemReady"`
 	IsGVCReady         bool `json:"isGVCReady"`
 	IsPrinterConnected bool `json:"isPrinterConnected"`
 	IsOtocamConnected  bool `json:"isOtocamConnected"`
@@ -177,6 +178,7 @@ func (s *Server) PrintScript(script []FormattedLine, reply *struct{}) error {
 func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
 
 	writePingResponse(w, &pingResponse{
+		IsSystemReady:      true,
 		IsGVCReady:         s.sysAgent.IsGVCOpen(),
 		IsPrinterConnected: s.sysAgent.CheckPrinter() == nil,
 		IsOtocamConnected:  s.sysAgent.CheckOtocam() == nil,
@@ -256,7 +258,7 @@ func (s *Server) switchGVCCamera(w http.ResponseWriter, r *http.Request) {
 	if err := s.sysAgent.SwitchGVCCamera(cam); err != nil {
 		writeResponse(w, &response{
 			Msg:        fmt.Sprintf("Switching to camera %s failed %v", camera, err),
-			IsMsgError: false,
+			IsMsgError: true,
 		})
 		return
 	}
