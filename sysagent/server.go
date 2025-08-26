@@ -29,6 +29,13 @@ type response struct {
 	Data       interface{}
 }
 
+type pingResponse struct {
+	IsGVCReady         bool `json:"isGVCReady"`
+	IsPrinterConnected bool `json:"isPrinterConnected"`
+	IsOtocamConnected  bool `json:"isOtocamConnected"`
+	Volume             int  `json:"volume"`
+}
+
 func NewServer(c vc.Config) *Server {
 	tun, ok := c.Tunnels[vc.RPCTunID]
 	if !ok {
@@ -168,10 +175,19 @@ func (s *Server) PrintScript(script []FormattedLine, reply *struct{}) error {
 /************* HTTP Wrapper Functions *************/
 // ping handles the ping request to check if the server is running.
 func (s *Server) ping(w http.ResponseWriter, r *http.Request) {
-	writeResponse(w, &response{
-		Msg:        "VirtualClinic is up & running",
-		IsMsgError: false,
-		Data:       "pong",
+
+	writePingResponse(w, &pingResponse{
+		IsGVCReady:         s.sysAgent.IsGVCOpen(),
+		IsPrinterConnected: s.sysAgent.CheckPrinter() == nil,
+		IsOtocamConnected:  s.sysAgent.CheckOtocam() == nil,
+		Volume: func() int {
+			vol, err := s.sysAgent.Volume()
+
+			if err != nil {
+				return -1
+			}
+			return vol
+		}(),
 	})
 }
 
@@ -381,5 +397,15 @@ func writeResponse(w http.ResponseWriter, resp *response) {
 		return
 	}
 	//	log.Printf("Writing json response %s", js)
+	w.Write(js)
+}
+
+func writePingResponse(w http.ResponseWriter, resp *pingResponse) {
+	w.Header().Set("Content-Type", "application/json")
+	js, e := json.Marshal(resp)
+	if e != nil {
+		http.Error(w, e.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Write(js)
 }
