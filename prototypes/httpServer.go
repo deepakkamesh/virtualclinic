@@ -205,8 +205,9 @@ func (s *Server) printScript(w http.ResponseWriter, r *http.Request) {
 	script := r.FormValue("script")
 	lines := strings.Split(script, "\n")
 
-	fmt.Printf("%v -- %v\n", lines[0], len(lines))
-
+	for _, line := range lines {
+		fmt.Printf("%v \n", line)
+	}
 	/*	if err != nil {
 		writeResponse(w, &response{
 			Err: fmt.Sprintf("Print Error: %v", err),

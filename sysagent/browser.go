@@ -36,7 +36,7 @@ func NewBrowser(browserPath, userDataDir string, browserWindowState string) *Bro
 		browser:      nil,
 		windowLayout: &proto.BrowserBounds{WindowState: proto.BrowserWindowState(browserWindowState)},
 		pages:        make(map[PageType]*rod.Page),
-		timeout:      10 * time.Second,
+		timeout:      30 * time.Second,
 	}
 }
 
@@ -104,7 +104,7 @@ func (b *Browser) GVC(gvcID string) error {
 		return err
 	}
 
-	time.Sleep(5 * time.Second) // Small delay to let the page load fully.
+	time.Sleep(10 * time.Second) // Small delay to let the page load fully.
 	if err := p.SetWindow(b.windowLayout); err != nil {
 		return err
 	}
