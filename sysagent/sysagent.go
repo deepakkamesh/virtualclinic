@@ -71,7 +71,7 @@ func (s *SysAgent) StartTunnel(tunID string) error {
 	go func() {
 		for {
 			if err := tunnelConn.Start(context.Background()); err != nil {
-				glog.Warningf("SSH tunnel error: %v. Will auto retry forever.", err)
+				glog.Warningf("Tunnel error: %v. Will auto retry forever.", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -151,7 +151,7 @@ func (s *SysAgent) Volume() (int, error) {
 }
 
 // PrintScript prints the script to the printer device.
-func (s *SysAgent) PrintScript(lines []FormattedLine) error {
+func (s *SysAgent) PrintScript(lines []*FormattedLine) error {
 	f, err := os.OpenFile(s.PrinterDevice, os.O_RDWR, 0)
 	if err != nil {
 		return err

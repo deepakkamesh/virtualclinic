@@ -169,7 +169,7 @@ func (s *Server) SetVolume(vol int, reply *struct{}) error {
 	return s.sysAgent.SetVolume(vol)
 }
 
-func (s *Server) PrintScript(script []FormattedLine, reply *struct{}) error {
+func (s *Server) PrintScript(script []*FormattedLine, reply *struct{}) error {
 	return s.sysAgent.PrintScript(script)
 }
 
@@ -237,6 +237,7 @@ func (s *Server) stopRemoteGVC(w http.ResponseWriter, r *http.Request) {
 		IsMsgError: false,
 	})
 }
+
 func (s *Server) switchGVCCamera(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
@@ -368,20 +369,54 @@ func (s *Server) volume(w http.ResponseWriter, r *http.Request) {
 // print prints the pdf file that was generated.
 func (s *Server) printScript(w http.ResponseWriter, r *http.Request) {
 
-	if err := r.ParseForm(); err != nil {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if err := r.ParseMultipartForm(10); err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
+	lines := strings.Split(r.FormValue("script"), "\n")
 
-	/*	if err != nil {
+	script := func() []*FormattedLine {
+		loc, _ := time.LoadLocation("Asia/Kolkata") // Always print date/time in India time.
+		now := time.Now().In(loc)
+		date := now.Format("2 Jan 2006  3:04 pm")
+
+		lines := []*FormattedLine{}
+		line := Line("Dr. R Guruswamy", FontSize([2]uint8{2, 2}), Smooth(1), Align("center"), Underline(6), Emphasize(3), FormFeed(2))
+		lines = append(lines, line)
+		line = Line("Ph:+91-9840084500 / Email:dr.guruswamy@gmail.com", FontSize([2]uint8{1, 1}), Smooth(1), Align("left"))
+		lines = append(lines, line)
+		line = Line("_______________________________________________", FontSize([2]uint8{1, 1}), Smooth(1), Align("center"), FormFeed(2))
+		lines = append(lines, line)
+		line = Line(date, FontSize([2]uint8{1, 1}), Smooth(1), Align("right"), FormFeed(2))
+		lines = append(lines, line)
+
+		return lines
+	}()
+
+	var line *FormattedLine
+
+	for i := 0; i < len(lines); i++ {
+		// First line contains name and should be bold.
+		if i == 0 {
+			line = Line(lines[0], FontSize([2]uint8{1, 1}), Emphasize(1), Smooth(1), Align("center"), FormFeed(2))
+		} else {
+			line = Line(lines[i], FontSize([2]uint8{1, 1}), Smooth(1), Align("left"), FormFeed(1))
+		}
+		script = append(script, line)
+	}
+
+	if err := s.sysAgent.PrintScript(script); err != nil {
 		writeResponse(w, &response{
-			Err: fmt.Sprintf("Print Error: %v", err),
+			Msg:        fmt.Sprintf("Prescription Print Error: %v", err),
+			IsMsgError: true,
 		})
-		log.Printf("Print Error %v : %v", fname, err)
 		return
-	}*/
+	}
 
-	// If Exec is successful, send back command output.
 	writeResponse(w, &response{
 		Msg:        "Prescription Printed",
 		IsMsgError: false,
