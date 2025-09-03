@@ -5,13 +5,13 @@ hello:
 build: 
 	GOARCH=amd64 GOOS=linux CGO_ENABLED=0  go build ./main.go
 
-build-sysagent-cli: 
+sysagent-cli: 
 	go build -o ./bin/sysagent-cli/cli ./bin/sysagent-cli/
 
-build-sysagent-linux:
+sysagent-linux:
 	GOARCH=amd64 GOOS=linux CGO_ENABLED=0  go build -o ./bin/sysagent/sysagent ./bin/sysagent/
 
-build-sysagent-mac:
+sysagent-mac:
 	 go build -o ./bin/sysagent/sysagent ./bin/sysagent/
 
 push-sysagent:

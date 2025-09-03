@@ -194,11 +194,18 @@ func (s *Server) volume(w http.ResponseWriter, r *http.Request) {
 
 // print prints the pdf file that was generated.
 func (s *Server) printScript(w http.ResponseWriter, r *http.Request) {
-
-	if err := r.ParseForm(); err != nil {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	if err := r.ParseMultipartForm(10); err != nil {
 		fmt.Fprintf(w, "Error: %v", err)
 		return
 	}
+	script := r.FormValue("script")
+	lines := strings.Split(script, "\n")
+
+	fmt.Printf("%v -- %v\n", lines[0], len(lines))
 
 	/*	if err != nil {
 		writeResponse(w, &response{
